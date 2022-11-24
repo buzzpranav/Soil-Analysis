@@ -184,7 +184,7 @@ def ColorPalette(root_image):
     plt.imshow(img_c)
     if show_graph == True: 
         plt.show()
-    pre_process = "colorP_" + os.path.basename(root_image)
+    pre_process = "graphs/" + "colorP_" + os.path.basename(root_image)
     plt.imsave(pre_process, img_c)
 
 #~~ Step 3: Convert image to RGB, HSV, Lab, and XYZ spaces
@@ -209,7 +209,7 @@ def ColorSpace(root_image):
     axis.set_zlabel("Blue") 
     if show_graph == True:
         plt.show()
-    rgbFileName = "colorSRGB_" + os.path.basename(root_image)
+    rgbFileName = "graphs/" + "colorSRGB_" + os.path.basename(root_image)
     plt.savefig(rgbFileName)
 
     def getAverageRGBN(rgb_img):
@@ -238,7 +238,7 @@ def ColorSpace(root_image):
     axis.set_zlabel("Value")
     if show_graph == True:
         plt.show()
-    hsvFileName = "colorSHSV_" + os.path.basename(root_image)
+    hsvFileName = "graphs/" + "colorSHSV_" + os.path.basename(root_image)
     plt.savefig(hsvFileName)
     def getAverageHSVN(hsv_img):
         im = np.array(hsv_img)
@@ -266,7 +266,7 @@ def ColorSpace(root_image):
     axis.set_zlabel("b* Value")
     if show_graph == True:
         plt.show()
-    labFileName = "colorSLAB_" + os.path.basename(root_image)
+    labFileName = "graphs/" + "colorSLAB_" + os.path.basename(root_image)
     plt.savefig(labFileName)
     def getAverageLabN(lab_img):
         im = np.array(lab_img)
@@ -294,7 +294,7 @@ def ColorSpace(root_image):
     axis.set_zlabel("Z")
     if show_graph == True:
         plt.show()
-    xyzFileName = "colorSXYZ_" + os.path.basename(root_image)
+    xyzFileName = "graphs/" + "colorSXYZ_" + os.path.basename(root_image)
     plt.savefig(xyzFileName)
     def getAverageXYZN(XYZ_img):
         im = np.array(XYZ_img)
@@ -443,7 +443,7 @@ def texture(root_image):
     plt.plot(np.log(fx[1:]), m*np.log(fx[1:]) + c, 'r', label='y={:.2f}x+{:.2f}'.format(m,c))
 
     plt.legend()
-    save_name = "colorT_" +  os.path.basename(root_image)
+    save_name = "graphs/" + "colorT_" +  os.path.basename(root_image)
     plt.savefig(save_name)
     if show_graph == True:
         plt.show()
