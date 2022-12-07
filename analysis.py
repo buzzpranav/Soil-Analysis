@@ -28,6 +28,7 @@ import numpy as np
 import cv2    
 import os
 import pandas as pd
+import colorgram
 import matplotlib.pyplot as plt
 from matplotlib import colors
 import joblib
@@ -193,6 +194,15 @@ def ColorSpace(root_image):
     if detailed_analysis == True:
         print('Average XYZ values are',getAverageXYZN(XYZ_img)) 
 
+def is_soil(root_image):
+    main_color = colorgram.extract(root_image, 3)
+    rgb = main_color[0].rgb
+    main_r,main_g,main_b = rgb[0],rgb[1],rgb[2]
+    if (main_r > 25 and main_r < 190) and (main_g > 10 and main_g < 180) and (main_b > 10 and main_b < 120):
+        return True
+    else:
+        return False
+
 #~~ Step 3: Find Soil pH Value Using Random Forest Model
 def pH(root_image):
     img = cv2.imread(root_image, 1)
@@ -274,7 +284,7 @@ def Organic_Material(root_image):
     elif int(clayPercent) < 15:
         print(Style.BRIGHT + Fore.YELLOW + Back.RED + " The clay percentage is too low! Consider adding more clay to your soil.")
     else:
-        print(Style.BRIGHT + Fore.WHITE + Back.GREEN + " The Soil Contains The Perfect Amount Of Clay For Agriulture and Gardening!")
+        print(Style.BRIGHT + Fore.WHITE + Back.GREEN + " The Soil Contains Suitable Amounts Of Clay For Agriulture and Gardening!")
     
     print("")
 
@@ -322,51 +332,33 @@ def Electrical_Conductivity(root_image):
 
     #~~ Step 5.3: Predict EC using pretrained models
     ECresult = float(ECmodelclass.predict([[temp]]))
-    print(Style.BRIGHT + Fore.BLUE + " The Electricial Conductivity of this soil is:", ECresult)
+    print(Style.BRIGHT + Fore.BLUE + " The Electricial Conductivity of this soil is:", round(ECresult,3))
     if float(ECresult) > 0.57:
         print(Style.BRIGHT + Fore.YELLOW + Back.RED + " The Electrical Conductivity is too high! Consider using better irrigation practices and avoid waterlogging")
     elif float(ECresult) < 0.15:
         print(Style.BRIGHT + Fore.YELLOW + Back.RED + " The Electrical Conductivity is too low! Consider adding organic matter, such as manure and compost to your soil")
     else:
-        print(Style.BRIGHT + Fore.WHITE + Back.GREEN + " The Soil Contains The Perfect Amount Of Electrical Conductivity For Agriulture and Gardening!")
-
-#~~ Step 6: Get Crop Recommendations
-def Crop_Recommendations(soil_type):
-    if soil_type.find("black") != -1:
-        print(Fore.BLACK + Back.WHITE + Style.BRIGHT + " We recommend planting: cotton, wheat, jowar, linseed, castor, sunflower and millets.")
-    elif soil_type.find("alluvial") != -1:
-        print(Fore.BLACK + Back.WHITE + Style.BRIGHT + " We recommend planting: rice, wheat, sugarcane, tobacco, maize, cotton, soybean, jute, oilseeds, fruits, and vegetables")
-    elif soil_type.find("loam") != -1:
-        print(Fore.BLACK + Back.WHITE + Style.BRIGHT + " We recommend planting: wheat, sugarcane, cotton, pulses, and oilseeds")
-    elif soil_type.find("red") != -1:
-        print(Fore.BLACK + Back.WHITE + Style.BRIGHT + " We recommend planting: cotton, wheat, rice, pulses, millets, tobacco, oil seeds, potatoes, and fruits.")
-    elif soil_type.find("yellow") != -1:
-        print(Fore.BLACK + Back.WHITE + Style.BRIGHT + " We recommend planting: Rice, Wheat, Sugarcane, Maize, Groundnut, ragi (finger millet) and potato, oilseeds, pulses, millets, and fruits")
-    elif soil_type.find("arid") != -1:
-        print(Fore.BLACK + Back.WHITE + Style.BRIGHT + " We recommend planting: Barley, Cotton, Wheat, Millets, Maize, & Pulses")
-    elif soil_type.find("silt") != -1:
-        print(Fore.BLACK + Back.WHITE + Style.BRIGHT + " We recommend planting: Tomatoes, Sage, Peonies, Hellebore, Roses, Butterfly Bush, Ferns, & Daffodils")
-    elif soil_type.find("marshy") != -1:
-        print(Fore.BLACK + Back.WHITE + Style.BRIGHT + " We recommend planting: Banana, Maize, Tomatoes, Pepper, & Garden egg.")
+        print(Style.BRIGHT + Fore.WHITE + Back.GREEN + " The Soil Contains The Perfect Amount Of Salt & Electrical Conductivity For Agriulture and Gardening!")
 
 #~~ Step 7: Compile and Run Together
 if soil_analysis == True:
-    print(Style.BRIGHT + Fore.WHITE + " Soil Analysis at: ")
-    print(Style.BRIGHT + Fore.WHITE + now.strftime("%d-%m-%Y %H:%M"))
+    print(Style.BRIGHT + Fore.WHITE + " Soil Analysis at: " + now.strftime("%d-%m-%Y %H:%M"))
     print(Style.BRIGHT + Fore.MAGENTA + " ---------------------------------------------")
     original_image = input(Style.BRIGHT + Fore.CYAN + " Enter Your Image File Location: ")
     if original_image == "":
         original_image = ("LoamySoil.png")
-    soil_type = (input(Style.BRIGHT + Fore.CYAN + " Please Enter The Soil Type:")).lower()
     print("")
-    ImgEnhancer(original_image)
-    root_image = ("CLAHE_" + original_image)
-    if detailed_analysis == True:
-        ColorSpace(root_image)
-    pH(root_image)
-    print("")
-    Organic_Material(root_image)
-    print("")
-    Electrical_Conductivity(root_image)
-    print("")
-    Crop_Recommendations(soil_type)
+    soil_confirmation = is_soil(original_image)
+    if soil_confirmation==True:
+        ImgEnhancer(original_image)
+        root_image = ("CLAHE_" + original_image)
+        if detailed_analysis == True:
+            ColorSpace(root_image)
+        pH(root_image)
+        print("")
+        Organic_Material(root_image)
+        print("")
+        Electrical_Conductivity(root_image)
+        print("")
+    else:
+        print("This Does Not Seem Like Soil! Please Try Again.")
